@@ -80,8 +80,19 @@ static int simple_submit_match (cu_match_t *match, void *user_data)
   if (match_value->ds_type & UTILS_LATENCY_GAUGE)
   {
     int percentile;
+    int Resolution;
+
     percentile = (match_value->ds_type >> UTILS_LATENCY_GAUGE_PERCENTILE_SHIFT)
 	    && 0x7F;
+
+    if (percentile == 0)
+	    percentile = 95;
+
+    Resolution = (match_value->ds_type >> UTILS_LATENCY_GAUGE_RESOLUTION_HIST_SHIFT)
+	    && 0x7F;
+
+    if (Resolution == 0)
+	    Resolution = 20;
 
     values[0].gauge = CDTIME_T_TO_DOUBLE (
 	    latency_counter_get_min(match_value->Counter));
@@ -102,7 +113,7 @@ static int simple_submit_match (cu_match_t *match, void *user_data)
 	    latency_counter_get_percentile(match_value->Counter, percentile));
 
     vl.values_len = 6;
-    latency_counter_reset(match_value->Counter);
+    latency_counter_reset(match_value->Counter, Resolution);
   }
   else if ((match_value->ds_type & UTILS_MATCH_DS_TYPE_GAUGE)
 	   && (match_value->values_num == 0))

@@ -271,7 +271,15 @@ cu_match_t *match_create_simple (const char *regex,
   user_data->ds_type = match_ds_type;
   if (match_ds_type & UTILS_LATENCY_GAUGE)
   {
-    user_data->Counter = latency_counter_create ();
+    int Resolution;
+
+    Resolution = (match_ds_type >> UTILS_LATENCY_GAUGE_RESOLUTION_HIST_SHIFT)
+	    && 0x7F;
+
+    if (Resolution == 0)
+	    Resolution = 20;
+
+    user_data->Counter = latency_counter_create (Resolution);
   }
 
   obj = match_create_callback (regex, excluderegex,

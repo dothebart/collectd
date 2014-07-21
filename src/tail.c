@@ -167,6 +167,12 @@ static int ctail_config_add_match (cu_tail_match_t *tm,
       value = atol(option->values[0].value.string);
       cm.flags |= value << UTILS_LATENCY_GAUGE_PERCENTILE_SHIFT;
     }
+    else if (strcasecmp ("PercentileHistogramResolution", option->key) == 0)
+    {
+      int value;
+      value = atol(option->values[0].value.string);
+      cm.flags |= value << UTILS_LATENCY_GAUGE_RESOLUTION_HIST_SHIFT;
+    }
     else
     {
       WARNING ("tail plugin: Option `%s' not allowed here.", option->key);
